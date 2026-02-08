@@ -2,12 +2,13 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Nina’s Cozy Valentine 💖</title>
 
 <style>
   body {
     margin: 0;
-    font-family: 'Comic Sans MS', Arial, sans-serif;
+    font-family: "Comic Sans MS", Arial, sans-serif;
     background: linear-gradient(135deg, #ffe4ec, #fff1d6);
     overflow: hidden;
     text-align: center;
@@ -114,21 +115,30 @@
 </audio>
 
 <script>
+  // Make functions global for Safari / GitHub Pages
+  window.startMusic = startMusic;
+  window.accept = accept;
+
   const music = document.getElementById("bgMusic");
   const counter = document.getElementById("counter");
   const proposal = document.getElementById("proposal");
   const love = document.getElementById("love");
 
+  const collected = {
+    tooth: false,
+    avo: false,
+    berry: false,
+    coffee: false
+  };
+
   function startMusic() {
+    if (!music) return;
     music.volume = 0.4;
-    music.play();
+    music.play().catch(() => {});
     document.getElementById("musicBtn").style.display = "none";
   }
 
-  const targets = { "🦷":1, "🥑":1, "🍓":1, "☕":1 };
-  const collected = { "🦷":0, "🥑":0, "🍓":0, "☕":0 };
-
-  function spawnItem(icon) {
+  function spawnItem(type, icon) {
     const el = document.createElement("div");
     el.className = "item";
     el.textContent = icon;
@@ -136,8 +146,8 @@
     el.style.animationDuration = (8 + Math.random() * 6) + "s";
 
     el.onclick = () => {
-      if (collected[icon] < targets[icon]) {
-        collected[icon]++;
+      if (!collected[type]) {
+        collected[type] = true;
         updateCounter();
         el.remove();
         checkWin();
@@ -150,45 +160,29 @@
 
   function updateCounter() {
     counter.textContent =
-      `🦷 ${collected["🦷"]} | 🥑 ${collected["🥑"]} | 🍓 ${collected["🍓"]} | ☕ ${collected["☕"]}`;
+      `🦷 ${collected.tooth ? 1 : 0} | 🥑 ${collected.avo ? 1 : 0} | 🍓 ${collected.berry ? 1 : 0} | ☕ ${collected.coffee ? 1 : 0}`;
   }
 
   function checkWin() {
-    const done = Object.keys(collected).every(
-      key => collected[key] >= targets[key]
-    );
-
-    if (done) {
+    if (collected.tooth && collected.avo && collected.berry && collected.coffee) {
       document.querySelectorAll(".item").forEach(i => i.remove());
       proposal.style.display = "block";
-
-      // Fade music out gently
-      const fade = setInterval(() => {
-        if (music.volume > 0.05) {
-          music.volume -= 0.02;
-        } else {
-          music.pause();
-          clearInterval(fade);
-        }
-      }, 200);
     }
   }
 
   function accept() {
     love.style.display = "block";
-    confetti();
   }
 
-  function confetti() {
-    for (let i = 0; i < 30; i++) {
-      const c = document.createElement("div");
-      c.className = "item";
-      c.textContent = ["💖","🦷","🥑","🍓","☕"][Math.floor(Math.random()*5)];
-      c.style.left = Math.random() * 100 + "vw";
-      c.style.animationDuration = (5 + Math.random() * 4) + "s";
-      document.body.appendChild(c);
-      setTimeout(() => c.remove(), 10000);
-    }
-  }
+  // Gentle spawn loop
+  setInterval(() => {
+    spawnItem("tooth", "🦷");
+    spawnItem("avo", "🥑");
+    spawnItem("berry", "🍓");
+    spawnItem("coffee", "☕");
+  }, 2000);
+</script>
 
-  // Gentle spawn rate
+</body>
+</html>
+
