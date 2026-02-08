@@ -49,6 +49,20 @@
     opacity: 0.9;
   }
 
+  .yjhd {
+    color: #9caf88; /* sage green */
+    font-weight: bold;
+  }
+
+  .golden {
+    position: absolute;
+    font-size: 3rem;
+    color: gold;
+    font-weight: bold;
+    opacity: 0.9;
+    transition: all 2s ease-in-out;
+  }
+
   @keyframes floatUp {
     from { transform: translateY(110vh); }
     to { transform: translateY(-10vh); }
@@ -87,35 +101,32 @@
 
 <h1>Collect Nina’s Favorites 💕</h1>
 <div id="instructions">
-  Take your time… click each cozy favorite ☁️
+  Click each cozy favorite 3 times ☁️
 </div>
 
-<button id="musicBtn" onclick="startMusic()">🎵 Turn on cozy music</button>
+<button id="musicBtn">🎵 Turn on cozy music</button>
 
 <div id="counter">
-  🦷 0 | 🥑 0 | 🍓 0 | ☕ 0
+  🦷 0 | 🥑 0 | 🍓 0 | ☕ 0 | YJHD 0
 </div>
 
 <div id="proposal">
   <h1>Nina 💖</h1>
-  <p>
-    You found everything… just like you found my heart.
-  </p>
+  <p>You found everything… just like you found my heart.</p>
   <h2>Will you be my Valentine?</h2>
 
-  <button class="choice" onclick="accept()">YES 💕</button>
-  <button class="choice" onclick="accept()">ABSOLUTELY YES 🥰</button>
+  <button class="choice">YES 💕</button>
+  <button class="choice">ABSOLUTELY YES 🥰</button>
 
   <div id="love">💖 happiest yes ever 💖</div>
 </div>
 
-<!-- Background Music -->
 <audio id="bgMusic" loop>
   <source src="cozy.mp3" type="audio/mpeg">
 </audio>
 
 <script>
-  // Make functions global for Safari / GitHub Pages
+  // Global functions
   window.startMusic = startMusic;
   window.accept = accept;
 
@@ -124,11 +135,13 @@
   const proposal = document.getElementById("proposal");
   const love = document.getElementById("love");
 
+  // Track counts for each item (3 clicks to complete)
   const collected = {
-    tooth: false,
-    avo: false,
-    berry: false,
-    coffee: false
+    tooth: 0,
+    avo: 0,
+    berry: 0,
+    coffee: 0,
+    yjhd: 0
   };
 
   function startMusic() {
@@ -140,18 +153,24 @@
 
   function spawnItem(type, icon) {
     const el = document.createElement("div");
-    el.className = "item";
     el.textContent = icon;
+
+    if (type === "yjhd") el.className = "item yjhd";
+    else el.className = "item";
+
     el.style.left = Math.random() * 85 + "vw";
     el.style.animationDuration = (8 + Math.random() * 6) + "s";
 
     el.onclick = () => {
-      if (!collected[type]) {
-        collected[type] = true;
-        updateCounter();
+      if (type === "yjhd" && collected.yjhd < 3) {
+        collected.yjhd++;
         el.remove();
-        checkWin();
+      } else if (type !== "yjhd" && collected[type] < 3) {
+        collected[type]++;
+        el.remove();
       }
+      updateCounter();
+      checkWin();
     };
 
     document.body.appendChild(el);
@@ -160,13 +179,50 @@
 
   function updateCounter() {
     counter.textContent =
-      `🦷 ${collected.tooth ? 1 : 0} | 🥑 ${collected.avo ? 1 : 0} | 🍓 ${collected.berry ? 1 : 0} | ☕ ${collected.coffee ? 1 : 0}`;
+      `🦷 ${collected.tooth} | 🥑 ${collected.avo} | 🍓 ${collected.berry} | ☕ ${collected.coffee} | YJHD ${collected.yjhd}`;
+  }
+
+  function triggerGolden3333() {
+    const types = ["🦷", "🥑", "🍓", "☕", "YJHD"];
+    const centerX = window.innerWidth / 2;
+    const centerY = window.innerHeight / 2;
+
+    types.forEach(icon => {
+      for (let i = 0; i < 3; i++) {
+        const el = document.createElement("div");
+        el.className = "golden";
+        el.textContent = icon;
+        el.style.left = Math.random() * window.innerWidth + "px";
+        el.style.top = Math.random() * window.innerHeight + "px";
+        document.body.appendChild(el);
+
+        setTimeout(() => {
+          el.style.left = centerX + "px";
+          el.style.top = centerY + "px";
+          el.style.transform = "translate(-50%, -50%) scale(3)";
+          el.style.opacity = "0";
+        }, 50);
+
+        setTimeout(() => el.remove(), 2200);
+      }
+    });
   }
 
   function checkWin() {
-    if (collected.tooth && collected.avo && collected.berry && collected.coffee) {
+    const allCollected =
+      collected.tooth === 3 &&
+      collected.avo === 3 &&
+      collected.berry === 3 &&
+      collected.coffee === 3 &&
+      collected.yjhd === 3;
+
+    if (allCollected) {
       document.querySelectorAll(".item").forEach(i => i.remove());
-      proposal.style.display = "block";
+      triggerGolden3333();
+
+      setTimeout(() => {
+        proposal.style.display = "block";
+      }, 2300);
     }
   }
 
@@ -174,15 +230,21 @@
     love.style.display = "block";
   }
 
-  // Gentle spawn loop
+  // Event listeners
+  document.getElementById("musicBtn").addEventListener("click", startMusic);
+  document.querySelectorAll(".choice").forEach(btn => btn.addEventListener("click", accept));
+
+  // Spawn loop
   setInterval(() => {
     spawnItem("tooth", "🦷");
     spawnItem("avo", "🥑");
     spawnItem("berry", "🍓");
     spawnItem("coffee", "☕");
+
+    if (collected.yjhd < 3) spawnItem("yjhd", "YJHD");
   }, 2000);
+
 </script>
 
 </body>
 </html>
-
