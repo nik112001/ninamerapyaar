@@ -60,8 +60,15 @@
   }
 
   #proposal {
-    display: none;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.5s;
     margin-top: 70px;
+  }
+
+  #proposal.show {
+    opacity: 1;
+    pointer-events: auto;
   }
 
   button.choice {
@@ -103,9 +110,7 @@
   /* Rose animation */
   .rose {
     position: fixed;
-    font-size: 2rem;
     color: #ff0000;
-    opacity: 0.9;
     pointer-events: none;
     animation: floatRose linear forwards;
   }
@@ -148,136 +153,10 @@
 </audio>
 
 <script>
-  window.startMusic = startMusic;
-  window.accept = accept;
+const music = document.getElementById("bgMusic");
+const counter = document.getElementById("counter");
+const proposal = document.getElementById("proposal");
+const love = document.getElementById("love");
+const bigThree = document.getElementById("bigThree");
 
-  const music = document.getElementById("bgMusic");
-  const counter = document.getElementById("counter");
-  const proposal = document.getElementById("proposal");
-  const love = document.getElementById("love");
-  const bigThree = document.getElementById("bigThree");
-
-  const collected = {
-    tooth: 0,
-    avo: 0,
-    berry: 0,
-    coffee: 0,
-    yjhd: 0
-  };
-
-  function startMusic() {
-    if (!music) return;
-    music.volume = 0.4;
-    music.play().catch(() => {});
-    document.getElementById("musicBtn").style.display = "none";
-  }
-
-  function spawnItem(type, icon) {
-    const el = document.createElement("div");
-    el.textContent = icon;
-    el.className = type === "yjhd" ? "item yjhd" : "item";
-    el.style.left = Math.random() * 85 + "vw";
-    el.style.animationDuration = (8 + Math.random() * 6) + "s";
-
-    el.onclick = () => {
-      if (type === "yjhd" && collected.yjhd < 3) {
-        collected.yjhd++;
-        el.remove();
-      } else if (type !== "yjhd" && collected[type] < 3) {
-        collected[type]++;
-        el.remove();
-      }
-      updateCounter();
-      checkWin();
-    };
-
-    document.body.appendChild(el);
-    setTimeout(() => el.remove(), 15000);
-  }
-
-  function updateCounter() {
-    counter.textContent =
-      `🦷 ${collected.tooth} | 🥑 ${collected.avo} | 🍓 ${collected.berry} | ☕ ${collected.coffee} | YJHD ${collected.yjhd}`;
-  }
-
-  function showBigThree() {
-    bigThree.style.opacity = 1;
-    bigThree.style.transform = "translate(-50%, -50%) scale(1.5)";
-    setTimeout(() => {
-      bigThree.style.opacity = 0;
-      bigThree.style.transform = "translate(-50%, -50%) scale(3)";
-    }, 1500);
-
-    setTimeout(() => {
-      proposal.style.display = "block";
-    }, 2500);
-  }
-
-  function spawnRoses() {
-    for (let i = 0; i < 50; i++) {
-      const rose = document.createElement("div");
-      rose.className = "rose";
-      rose.textContent = "🌹";
-      rose.style.left = Math.random() * window.innerWidth + "px";
-      rose.style.fontSize = (16 + Math.random() * 24) + "px";
-      rose.style.animationDuration = (4 + Math.random() * 4) + "s";
-      document.body.appendChild(rose);
-      setTimeout(() => rose.remove(), 8000);
-    }
-  }
-
-  function checkWin() {
-    const allCollected = Object.values(collected).every(v => v === 3);
-    if (allCollected) {
-      document.querySelectorAll(".item").forEach(i => i.remove());
-      showBigThree();
-    }
-  }
-
-  function accept() {
-    spawnRoses();
-    love.style.display = "block";
-  }
-
-  // Event listeners
-  document.getElementById("musicBtn").addEventListener("click", startMusic);
-  document.getElementById("yesBtn").addEventListener("click", accept);
-
-  // No button trick
-  const noBtn = document.getElementById("noBtn");
-  let stopMoving = false;
-
-  noBtn.addEventListener("mousemove", (e) => {
-    if (stopMoving) return;
-    const rect = noBtn.getBoundingClientRect();
-    const distanceX = e.clientX - (rect.left + rect.width/2);
-    const distanceY = e.clientY - (rect.top + rect.height/2);
-    const distance = Math.sqrt(distanceX*distanceX + distanceY*distanceY);
-    if (distance < 80) {
-      const newX = Math.random() * (window.innerWidth - rect.width);
-      const newY = Math.random() * (window.innerHeight - rect.height);
-      noBtn.style.position = "absolute";
-      noBtn.style.left = newX + "px";
-      noBtn.style.top = newY + "px";
-    }
-  });
-
-  setTimeout(() => { stopMoving = true; }, 5000);
-
-  noBtn.addEventListener("click", () => {
-    spawnRoses();
-    alert("Sorry, you're stuck with me 💖");
-  });
-
-  // Spawn loop
-  setInterval(() => {
-    spawnItem("tooth", "🦷");
-    spawnItem("avo", "🥑");
-    spawnItem("berry", "🍓");
-    spawnItem("coffee", "☕");
-    if (collected.yjhd < 3) spawnItem("yjhd", "YJHD");
-  }, 2000);
-
-</script>
-</body>
-</html>
+const collected = { tooth:0, avo:0, berry:0, coffee
