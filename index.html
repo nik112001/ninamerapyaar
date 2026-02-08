@@ -54,15 +54,6 @@
     font-weight: bold;
   }
 
-  .golden {
-    position: absolute;
-    font-size: 3rem;
-    color: gold;
-    font-weight: bold;
-    opacity: 0.9;
-    transition: all 2s ease-in-out;
-  }
-
   @keyframes floatUp {
     from { transform: translateY(110vh); }
     to { transform: translateY(-10vh); }
@@ -94,6 +85,35 @@
     margin-top: 20px;
     display: none;
   }
+
+  /* Big 3333 for final animation */
+  #bigThree {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 6rem;
+    color: gold;
+    font-weight: bold;
+    opacity: 0;
+    transition: opacity 1.5s ease-in-out, transform 1.5s ease-in-out;
+    z-index: 9999;
+  }
+
+  /* Rose animation */
+  .rose {
+    position: fixed;
+    font-size: 2rem;
+    color: #ff0000;
+    opacity: 0.9;
+    pointer-events: none;
+    animation: floatRose linear forwards;
+  }
+
+  @keyframes floatRose {
+    0% { transform: translateY(100vh) rotate(0deg); opacity: 1; }
+    100% { transform: translateY(-10vh) rotate(360deg); opacity: 0; }
+  }
 </style>
 </head>
 
@@ -110,13 +130,15 @@
   🦷 0 | 🥑 0 | 🍓 0 | ☕ 0 | YJHD 0
 </div>
 
+<div id="bigThree">3333</div>
+
 <div id="proposal">
   <h1>Nina 💖</h1>
   <p>You found everything… just like you found my heart.</p>
   <h2>Will you be my Valentine?</h2>
 
-  <button class="choice">YES 💕</button>
-  <button class="choice">ABSOLUTELY YES 🥰</button>
+  <button class="choice" id="yesBtn">YES 💕</button>
+  <button class="choice" id="noBtn">No</button>
 
   <div id="love">💖 happiest yes ever 💖</div>
 </div>
@@ -126,7 +148,6 @@
 </audio>
 
 <script>
-  // Global functions
   window.startMusic = startMusic;
   window.accept = accept;
 
@@ -134,8 +155,8 @@
   const counter = document.getElementById("counter");
   const proposal = document.getElementById("proposal");
   const love = document.getElementById("love");
+  const bigThree = document.getElementById("bigThree");
 
-  // Track counts for each item (3 clicks to complete)
   const collected = {
     tooth: 0,
     avo: 0,
@@ -154,10 +175,7 @@
   function spawnItem(type, icon) {
     const el = document.createElement("div");
     el.textContent = icon;
-
-    if (type === "yjhd") el.className = "item yjhd";
-    else el.className = "item";
-
+    el.className = type === "yjhd" ? "item yjhd" : "item";
     el.style.left = Math.random() * 85 + "vw";
     el.style.animationDuration = (8 + Math.random() * 6) + "s";
 
@@ -182,57 +200,74 @@
       `🦷 ${collected.tooth} | 🥑 ${collected.avo} | 🍓 ${collected.berry} | ☕ ${collected.coffee} | YJHD ${collected.yjhd}`;
   }
 
-  function triggerGolden3333() {
-    const types = ["🦷", "🥑", "🍓", "☕", "YJHD"];
-    const centerX = window.innerWidth / 2;
-    const centerY = window.innerHeight / 2;
+  function showBigThree() {
+    bigThree.style.opacity = 1;
+    bigThree.style.transform = "translate(-50%, -50%) scale(1.5)";
+    setTimeout(() => {
+      bigThree.style.opacity = 0;
+      bigThree.style.transform = "translate(-50%, -50%) scale(3)";
+    }, 1500);
 
-    types.forEach(icon => {
-      for (let i = 0; i < 3; i++) {
-        const el = document.createElement("div");
-        el.className = "golden";
-        el.textContent = icon;
-        el.style.left = Math.random() * window.innerWidth + "px";
-        el.style.top = Math.random() * window.innerHeight + "px";
-        document.body.appendChild(el);
+    setTimeout(() => {
+      proposal.style.display = "block";
+    }, 2500);
+  }
 
-        setTimeout(() => {
-          el.style.left = centerX + "px";
-          el.style.top = centerY + "px";
-          el.style.transform = "translate(-50%, -50%) scale(3)";
-          el.style.opacity = "0";
-        }, 50);
-
-        setTimeout(() => el.remove(), 2200);
-      }
-    });
+  function spawnRoses() {
+    for (let i = 0; i < 50; i++) {
+      const rose = document.createElement("div");
+      rose.className = "rose";
+      rose.textContent = "🌹";
+      rose.style.left = Math.random() * window.innerWidth + "px";
+      rose.style.fontSize = (16 + Math.random() * 24) + "px";
+      rose.style.animationDuration = (4 + Math.random() * 4) + "s";
+      document.body.appendChild(rose);
+      setTimeout(() => rose.remove(), 8000);
+    }
   }
 
   function checkWin() {
-    const allCollected =
-      collected.tooth === 3 &&
-      collected.avo === 3 &&
-      collected.berry === 3 &&
-      collected.coffee === 3 &&
-      collected.yjhd === 3;
-
+    const allCollected = Object.values(collected).every(v => v === 3);
     if (allCollected) {
       document.querySelectorAll(".item").forEach(i => i.remove());
-      triggerGolden3333();
-
-      setTimeout(() => {
-        proposal.style.display = "block";
-      }, 2300);
+      showBigThree();
     }
   }
 
   function accept() {
+    spawnRoses();
     love.style.display = "block";
   }
 
   // Event listeners
   document.getElementById("musicBtn").addEventListener("click", startMusic);
-  document.querySelectorAll(".choice").forEach(btn => btn.addEventListener("click", accept));
+  document.getElementById("yesBtn").addEventListener("click", accept);
+
+  // No button trick
+  const noBtn = document.getElementById("noBtn");
+  let stopMoving = false;
+
+  noBtn.addEventListener("mousemove", (e) => {
+    if (stopMoving) return;
+    const rect = noBtn.getBoundingClientRect();
+    const distanceX = e.clientX - (rect.left + rect.width/2);
+    const distanceY = e.clientY - (rect.top + rect.height/2);
+    const distance = Math.sqrt(distanceX*distanceX + distanceY*distanceY);
+    if (distance < 80) {
+      const newX = Math.random() * (window.innerWidth - rect.width);
+      const newY = Math.random() * (window.innerHeight - rect.height);
+      noBtn.style.position = "absolute";
+      noBtn.style.left = newX + "px";
+      noBtn.style.top = newY + "px";
+    }
+  });
+
+  setTimeout(() => { stopMoving = true; }, 5000);
+
+  noBtn.addEventListener("click", () => {
+    spawnRoses();
+    alert("Sorry, you're stuck with me 💖");
+  });
 
   // Spawn loop
   setInterval(() => {
@@ -240,11 +275,9 @@
     spawnItem("avo", "🥑");
     spawnItem("berry", "🍓");
     spawnItem("coffee", "☕");
-
     if (collected.yjhd < 3) spawnItem("yjhd", "YJHD");
   }, 2000);
 
 </script>
-
 </body>
 </html>
