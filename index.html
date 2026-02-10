@@ -34,17 +34,24 @@ h1 {
   margin-bottom: 10px;
 }
 
-/* ===== MINIGAME ===== */
 #counter {
   font-size: 1.2rem;
   margin-bottom: 10px;
 }
 
+/* ===== FLOATING ITEMS ===== */
 .item {
   position: absolute;
   font-size: 2.6rem;
   cursor: pointer;
   user-select: none;
+  animation: floatUp linear infinite;
+  opacity: 0.9;
+}
+
+@keyframes floatUp {
+  from { transform: translateY(110vh); }
+  to { transform: translateY(-10vh); }
 }
 
 /* ===== PROPOSAL ===== */
@@ -84,17 +91,18 @@ button.choice {
   cursor: default;
 }
 
-/* ===== ROSES ===== */
+/* ===== ROSES SPELLING NINA ===== */
 .rose {
   position: fixed;
   font-size: 2.4rem;
   pointer-events: none;
   z-index: 2000;
-  animation: roseMove 3s ease-in-out forwards;
+  animation: roseMove 2.5s ease forwards;
 }
 
 @keyframes roseMove {
-  0% { transform: translate(var(--sx), var(--sy)); opacity: 1; }
+  0% { transform: translate(var(--sx), var(--sy)); opacity: 0; }
+  30% { opacity: 1; }
   100% { transform: translate(var(--tx), var(--ty)); opacity: 1; }
 }
 
@@ -196,45 +204,31 @@ document.addEventListener("DOMContentLoaded", () => {
   bgMusic.volume = 0.6;
   musicBtn.onclick = async () => { try { await bgMusic.play(); } catch{} };
 
-  // ===== MINIGAME (floating favorites) =====
+  // ===== MINIGAME (original floating up) =====
   const collected = { "🦷":0, "🥑":0, "🍓":0, "☕":0, "YJHD":0 };
   const totalNeeded = 3;
   const items = Object.keys(collected);
 
   function spawnItems() {
-    items.forEach(item => {
-      const el = document.createElement("div");
-      el.className = "item";
-      el.textContent = item;
-      document.body.appendChild(el);
+    items.forEach(item=>{
+      for(let i=0;i<7;i++){ // multiple copies
+        const el = document.createElement("div");
+        el.className = "item";
+        el.textContent = item;
+        document.body.appendChild(el);
 
-      el.style.left = Math.random()*90 + "vw";
-      el.style.top = Math.random()*80 + "vh";
+        el.style.left = Math.random()*90 + "vw";
+        el.style.animationDuration = (6 + Math.random()*4) + "s";
 
-      const speedX = (Math.random()-0.5)*0.5;
-      const speedY = (Math.random()-0.5)*0.5;
-      function float() {
-        const rect = el.getBoundingClientRect();
-        let x = rect.left + speedX*10;
-        let y = rect.top + speedY*10;
-        if (x < 0) x = 0;
-        if (x > window.innerWidth-40) x = window.innerWidth-40;
-        if (y < 0) y = 0;
-        if (y > window.innerHeight-40) y = window.innerHeight-40;
-        el.style.left = x + "px";
-        el.style.top = y + "px";
-        requestAnimationFrame(float);
+        el.onclick = () => {
+          collected[item]++;
+          if(collected[item] > totalNeeded) collected[item] = totalNeeded;
+          document.getElementById("counter").textContent = items.map(i=>`${i} ${collected[i]}`).join(" | ");
+          if (Object.values(collected).every(v => v>=totalNeeded)) {
+            proposal.classList.add("show");
+          }
+        };
       }
-      float();
-
-      el.onclick = () => {
-        collected[item]++;
-        if (collected[item] > totalNeeded) collected[item] = totalNeeded;
-        document.getElementById("counter").textContent = items.map(i=>`${i} ${collected[i]}`).join(" | ");
-        if (Object.values(collected).every(v => v>=totalNeeded)) {
-          proposal.classList.add("show");
-        }
-      };
     });
   }
   spawnItems();
@@ -251,40 +245,39 @@ document.addEventListener("DOMContentLoaded", () => {
   yesBtn.onclick = () => {
     proposal.classList.remove("show");
 
-    // Letter coordinates for NINA
+    // Define points for letters N-I-N-A
     const letters = {
-      N: [ [-20,-60], [0,-60], [0,60], [20,60] ],
-      I: [ [0,-60], [0,60] ],
-      N2: [ [40,-60], [60,-60], [60,60], [80,60] ],
-      A: [ [100,60], [80,60], [90,-60], [100,-60], [100,60] ]
+      N: [[-60,60],[-60,40],[-60,20],[-60,0],[-60,-20],[-60,-40],[-60,-60],[ -40,-40],[-20,-20],[0,0],[0,-60],[0,-40],[0,-20],[0,0],[0,20],[0,40],[0,60]],
+      I: [[60,-60],[60,-40],[60,-20],[60,0],[60,20],[60,40],[60,60]],
+      N2:[[80,60],[80,40],[80,20],[80,0],[80,-20],[80,-40],[80,-60],[100,-40],[120,-20],[140,0],[140,-60],[140,-40],[140,-20],[140,0],[140,20],[140,40],[140,60]],
+      A:[[160,60],[160,40],[160,20],[160,0],[160,-20],[160,-40],[160,-60],[140,-60],[150,-60],[160,-60],[170,-60],[170,-40],[170,-20],[170,0],[170,20],[170,40],[160,0]]
     };
 
-    let letterIndex = 0;
-    const allLetters = ["N","I","N2","A"];
-    allLetters.forEach((ltr,i)=>{
+    const order = ["N","I","N2","A"];
+    order.forEach((ltr,idx)=>{
       setTimeout(()=>{
         letters[ltr].forEach(coord=>{
-          for(let j=0;j<10;j++){
+          for(let j=0;j<4;j++){
             const rose = document.createElement("div");
             rose.className="rose";
             rose.textContent="🌹";
             rose.style.setProperty("--sx", `${Math.random()*100-50}vw`);
-            rose.style.setProperty("--sy", `${Math.random()*100-50}vh`);
-            rose.style.setProperty("--tx", `calc(50vw + ${coord[0]}px + ${j*2}px)`);
-            rose.style.setProperty("--ty", `calc(40vh + ${coord[1]}px + ${j*2}px)`);
+            rose.style.setProperty("--sy", `110vh`);
+            rose.style.setProperty("--tx", `calc(50vw + ${coord[0]}px + ${j*4}px)`);
+            rose.style.setProperty("--ty", `calc(40vh + ${coord[1]}px + ${j*4}px)`);
             document.body.appendChild(rose);
-            setTimeout(()=>rose.remove(),3000);
+            setTimeout(()=>rose.remove(),4000);
           }
         });
-      }, i*400);
+      }, idx*300);
     });
 
-    setTimeout(()=>fade.style.opacity=1,2200);
+    setTimeout(()=>fade.style.opacity=1,2500);
     setTimeout(()=>{
       invitation.classList.add("show");
       fade.style.opacity=0;
       typeInvitation(scheduleText);
-    },4200);
+    },4500);
   };
 
   // ===== TYPING EFFECT =====
