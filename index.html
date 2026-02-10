@@ -84,7 +84,7 @@ button.choice {
   cursor: default;
 }
 
-/* ===== ROSES SPELLING ===== */
+/* ===== ROSES ===== */
 .rose {
   position: fixed;
   font-size: 2.4rem;
@@ -95,7 +95,7 @@ button.choice {
 
 @keyframes roseMove {
   0% { transform: translate(var(--sx), var(--sy)); opacity: 1; }
-  100% { transform: translate(var(--tx), var(--ty)); opacity: 0.95; }
+  100% { transform: translate(var(--tx), var(--ty)); opacity: 1; }
 }
 
 /* ===== FADE ===== */
@@ -208,11 +208,9 @@ document.addEventListener("DOMContentLoaded", () => {
       el.textContent = item;
       document.body.appendChild(el);
 
-      // Random starting position
       el.style.left = Math.random()*90 + "vw";
       el.style.top = Math.random()*80 + "vh";
 
-      // Floating animation
       const speedX = (Math.random()-0.5)*0.5;
       const speedY = (Math.random()-0.5)*0.5;
       function float() {
@@ -229,7 +227,6 @@ document.addEventListener("DOMContentLoaded", () => {
       }
       float();
 
-      // Click logic
       el.onclick = () => {
         collected[item]++;
         if (collected[item] > totalNeeded) collected[item] = totalNeeded;
@@ -240,7 +237,6 @@ document.addEventListener("DOMContentLoaded", () => {
       };
     });
   }
-
   spawnItems();
 
   // ===== Moving mischievous NO button =====
@@ -249,32 +245,37 @@ document.addEventListener("DOMContentLoaded", () => {
     noBtn.style.left = Math.random() * 70 + 10 + "vw";
   }
   setInterval(moveNoBtn, 700);
-  noBtn.onclick = (e)=>e.preventDefault(); // can't click
+  noBtn.onclick = (e)=>e.preventDefault();
 
   // ===== YES CLICK & NINA ROSES =====
   yesBtn.onclick = () => {
     proposal.classList.remove("show");
 
-    const letters = [
-      { char: "N", x: -120 },
-      { char: "I", x: -40 },
-      { char: "N", x: 40 },
-      { char: "A", x: 120 }
-    ];
+    // Letter coordinates for NINA
+    const letters = {
+      N: [ [-20,-60], [0,-60], [0,60], [20,60] ],
+      I: [ [0,-60], [0,60] ],
+      N2: [ [40,-60], [60,-60], [60,60], [80,60] ],
+      A: [ [100,60], [80,60], [90,-60], [100,-60], [100,60] ]
+    };
 
-    letters.forEach((letter,i)=>{
+    let letterIndex = 0;
+    const allLetters = ["N","I","N2","A"];
+    allLetters.forEach((ltr,i)=>{
       setTimeout(()=>{
-        for(let j=0;j<15;j++){
-          const rose = document.createElement("div");
-          rose.className="rose";
-          rose.textContent="🌹";
-          rose.style.setProperty("--sx", `${Math.random()*100-50}vw`);
-          rose.style.setProperty("--sy", `${Math.random()*100-50}vh`);
-          rose.style.setProperty("--tx", `calc(50vw + ${letter.x}px)`);
-          rose.style.setProperty("--ty", "40vh");
-          document.body.appendChild(rose);
-          setTimeout(()=>rose.remove(),3000);
-        }
+        letters[ltr].forEach(coord=>{
+          for(let j=0;j<10;j++){
+            const rose = document.createElement("div");
+            rose.className="rose";
+            rose.textContent="🌹";
+            rose.style.setProperty("--sx", `${Math.random()*100-50}vw`);
+            rose.style.setProperty("--sy", `${Math.random()*100-50}vh`);
+            rose.style.setProperty("--tx", `calc(50vw + ${coord[0]}px + ${j*2}px)`);
+            rose.style.setProperty("--ty", `calc(40vh + ${coord[1]}px + ${j*2}px)`);
+            document.body.appendChild(rose);
+            setTimeout(()=>rose.remove(),3000);
+          }
+        });
       }, i*400);
     });
 
