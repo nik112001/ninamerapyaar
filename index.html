@@ -34,18 +34,6 @@ h1 {
   margin-bottom: 15px;
 }
 
-.item {
-  position: absolute;
-  font-size: 2.6rem;
-  cursor: pointer;
-  animation: floatUp linear infinite;
-}
-
-@keyframes floatUp {
-  from { transform: translateY(110vh); }
-  to { transform: translateY(-10vh); }
-}
-
 /* Proposal */
 #proposal {
   position: fixed;
@@ -77,17 +65,24 @@ button.choice {
   margin: 15px;
 }
 
-/* Roses */
+/* Roses explosion */
 .rose {
   position: fixed;
   font-size: 2.5rem;
-  animation: roseFall 3s linear forwards;
   pointer-events: none;
+  z-index: 5000;
+  animation: explode 2.5s ease-out forwards;
 }
 
-@keyframes roseFall {
-  from { transform: translateY(110vh) rotate(0deg); opacity: 1; }
-  to { transform: translateY(-10vh) rotate(360deg); opacity: 0; }
+@keyframes explode {
+  from {
+    transform: translate(0, 0) scale(0.4) rotate(0deg);
+    opacity: 1;
+  }
+  to {
+    transform: translate(var(--x), var(--y)) scale(1.2) rotate(360deg);
+    opacity: 0;
+  }
 }
 
 /* Fade */
@@ -164,7 +159,7 @@ button.choice {
     <p><strong>😴 Afternoon:</strong> Come home, sleep & watch Harry Potter</p>
     <p><strong>🚿 Evening:</strong> Shower, get ready & pregame</p>
     <p><strong>🍝 7:45 PM:</strong> Dinner at <em>Sotto Sopra</em></p>
-    <p><strong>💫 Night:</strong> Reminding Nina exactly why she’s my favorite place to be 😌</p>
+    <p><strong>💫 Night:</strong> I won’t spoil the ending… but Nina’s my favorite part 😌</p>
   </div>
 </div>
 
@@ -178,10 +173,14 @@ document.addEventListener("DOMContentLoaded", () => {
   const bgMusic = document.getElementById("bgMusic");
   const musicBtn = document.getElementById("musicBtn");
   const yesBtn = document.getElementById("yesBtn");
+  const proposal = document.getElementById("proposal");
   const fade = document.getElementById("fade");
   const invitation = document.getElementById("invitation");
 
   bgMusic.volume = 0.6;
+
+  // Show proposal
+  proposal.classList.add("show");
 
   musicBtn.onclick = async () => {
     try { await bgMusic.play(); } catch {}
@@ -189,20 +188,26 @@ document.addEventListener("DOMContentLoaded", () => {
 
   yesBtn.onclick = () => {
 
-    for (let i = 0; i < 70; i++) {
+    // Roses explosion
+    for (let i = 0; i < 80; i++) {
       const rose = document.createElement("div");
       rose.className = "rose";
       rose.textContent = "🌹";
-      rose.style.left = Math.random() * 100 + "vw";
+      rose.style.left = "50vw";
+      rose.style.top = "50vh";
+      rose.style.setProperty("--x", `${(Math.random() - 0.5) * 100}vw`);
+      rose.style.setProperty("--y", `${(Math.random() - 0.5) * 100}vh`);
       document.body.appendChild(rose);
-      setTimeout(() => rose.remove(), 3000);
+      setTimeout(() => rose.remove(), 2600);
     }
 
-    setTimeout(() => fade.style.opacity = 1, 1500);
+    proposal.classList.remove("show");
+
+    setTimeout(() => fade.style.opacity = 1, 1200);
     setTimeout(() => {
       invitation.classList.add("show");
       fade.style.opacity = 0;
-    }, 3500);
+    }, 3200);
   };
 
 });
