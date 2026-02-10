@@ -31,10 +31,28 @@ h1 {
   padding: 10px 20px;
   font-size: 1rem;
   cursor: pointer;
-  margin-bottom: 15px;
+  margin-bottom: 10px;
 }
 
-/* Proposal */
+/* ===== MINIGAME ===== */
+#counter {
+  font-size: 1.2rem;
+  margin-bottom: 10px;
+}
+
+.heart {
+  position: absolute;
+  font-size: 2.5rem;
+  cursor: pointer;
+  animation: floatUp 6s linear infinite;
+}
+
+@keyframes floatUp {
+  from { transform: translateY(110vh); }
+  to { transform: translateY(-10vh); }
+}
+
+/* ===== PROPOSAL ===== */
 #proposal {
   position: fixed;
   inset: 0;
@@ -62,30 +80,24 @@ button.choice {
   background: #ff5c8a;
   color: white;
   cursor: pointer;
-  margin: 15px;
+  margin-top: 20px;
 }
 
-/* Roses explosion */
+/* ===== ROSES SPELLING ===== */
 .rose {
   position: fixed;
-  font-size: 2.5rem;
+  font-size: 2.4rem;
   pointer-events: none;
-  z-index: 5000;
-  animation: explode 2.5s ease-out forwards;
+  z-index: 2000;
+  animation: roseMove 3s ease-in-out forwards;
 }
 
-@keyframes explode {
-  from {
-    transform: translate(0, 0) scale(0.4) rotate(0deg);
-    opacity: 1;
-  }
-  to {
-    transform: translate(var(--x), var(--y)) scale(1.2) rotate(360deg);
-    opacity: 0;
-  }
+@keyframes roseMove {
+  0% { transform: translate(var(--sx), var(--sy)); opacity: 1; }
+  100% { transform: translate(var(--tx), var(--ty)); opacity: 0.95; }
 }
 
-/* Fade */
+/* ===== FADE ===== */
 #fade {
   position: fixed;
   inset: 0;
@@ -93,10 +105,10 @@ button.choice {
   opacity: 0;
   pointer-events: none;
   transition: opacity 2s ease;
-  z-index: 2000;
+  z-index: 3000;
 }
 
-/* Invitation */
+/* ===== INVITATION ===== */
 #invitation {
   position: fixed;
   inset: 0;
@@ -107,7 +119,7 @@ button.choice {
   opacity: 0;
   pointer-events: none;
   transition: opacity 2s ease;
-  z-index: 3000;
+  z-index: 4000;
   padding: 20px;
 }
 
@@ -123,25 +135,26 @@ button.choice {
   border-radius: 20px;
   box-shadow: 0 10px 30px rgba(0,0,0,0.1);
   color: #7a003c;
+  text-align: left;
+  font-size: 1.05rem;
+  line-height: 1.5;
 }
 
 .schedule h2 {
   font-family: "Pacifico", cursive;
   color: #ff5c8a;
-}
-
-.schedule p {
-  margin: 10px 0;
-  font-size: 1.05rem;
+  text-align: center;
 }
 </style>
 </head>
 
 <body>
 
-<h1>Collect Nina’s Favorites 💕</h1>
+<h1>Collect the Hearts 💕</h1>
 <button id="musicBtn">🎵 MUSIC TIME 😏</button>
+<div id="counter">💖 0 / 3</div>
 
+<!-- PROPOSAL -->
 <div id="proposal">
   <h1>Nina 💖</h1>
   <p>You found everything… just like you found my heart 😘😛😛</p>
@@ -152,14 +165,14 @@ button.choice {
 <div id="fade"></div>
 
 <div id="invitation">
-  <div class="schedule">
+  <div class="schedule" id="scheduleText">
     <h2>Saturday With You 💖</h2>
-    <p><strong>☀️ Morning:</strong> Get up & workout together</p>
-    <p><strong>🍾 11:00 – 3:00:</strong> Bottomless brunch at <em>Barcocina</em></p>
-    <p><strong>😴 Afternoon:</strong> Come home, sleep & watch Harry Potter</p>
-    <p><strong>🚿 Evening:</strong> Shower, get ready & pregame</p>
-    <p><strong>🍝 7:45 PM:</strong> Dinner at <em>Sotto Sopra</em></p>
-    <p><strong>💫 Night:</strong> I won’t spoil the ending… but Nina’s my favorite part 😌</p>
+    <p>☀️ Morning: Get up & workout together</p>
+    <p>🍾 11:00 – 3:00: Bottomless brunch at Barcocina</p>
+    <p>😴 Afternoon: Come home, sleep & watch Harry Potter</p>
+    <p>🚿 Evening: Shower, get ready & pregame</p>
+    <p>🍝 7:45 PM: Dinner at Sotto Sopra</p>
+    <p>💫 Night: I’ll remind Nina exactly how badly I want her 😌</p>
   </div>
 </div>
 
@@ -172,43 +185,109 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const bgMusic = document.getElementById("bgMusic");
   const musicBtn = document.getElementById("musicBtn");
-  const yesBtn = document.getElementById("yesBtn");
+  const counterEl = document.getElementById("counter");
   const proposal = document.getElementById("proposal");
+  const yesBtn = document.getElementById("yesBtn");
   const fade = document.getElementById("fade");
   const invitation = document.getElementById("invitation");
+  const scheduleText = document.getElementById("scheduleText");
 
+  let collected = 0;
   bgMusic.volume = 0.6;
-
-  // Show proposal
-  proposal.classList.add("show");
 
   musicBtn.onclick = async () => {
     try { await bgMusic.play(); } catch {}
   };
 
+  /* ===== MINIGAME ===== */
+  function spawnHeart() {
+    const heart = document.createElement("div");
+    heart.className = "heart";
+    heart.textContent = "💖";
+    heart.style.left = Math.random() * 90 + "vw";
+    heart.style.animationDuration = (4 + Math.random() * 2) + "s";
+    document.body.appendChild(heart);
+
+    heart.onclick = () => {
+      heart.remove();
+      collected++;
+      counterEl.textContent = `💖 ${collected} / 3`;
+      if (collected === 3) finishMinigame();
+    };
+
+    setTimeout(() => heart.remove(), 7000);
+  }
+
+  const heartInterval = setInterval(spawnHeart, 1200);
+
+  function finishMinigame() {
+    clearInterval(heartInterval);
+    proposal.classList.add("show");
+  }
+
+  /* ===== YES CLICK & NINA ROSES ===== */
   yesBtn.onclick = () => {
-
-    // Roses explosion
-    for (let i = 0; i < 80; i++) {
-      const rose = document.createElement("div");
-      rose.className = "rose";
-      rose.textContent = "🌹";
-      rose.style.left = "50vw";
-      rose.style.top = "50vh";
-      rose.style.setProperty("--x", `${(Math.random() - 0.5) * 100}vw`);
-      rose.style.setProperty("--y", `${(Math.random() - 0.5) * 100}vh`);
-      document.body.appendChild(rose);
-      setTimeout(() => rose.remove(), 2600);
-    }
-
     proposal.classList.remove("show");
 
-    setTimeout(() => fade.style.opacity = 1, 1200);
+    // Roses spell NINA
+    const letters = [
+      { char: "N", x: -120 },
+      { char: "I", x: -40 },
+      { char: "N", x: 40 },
+      { char: "A", x: 120 }
+    ];
+
+    letters.forEach((letter) => {
+      for (let j = 0; j < 15; j++) {
+        const rose = document.createElement("div");
+        rose.className = "rose";
+        rose.textContent = "🌹";
+        rose.style.setProperty("--sx", `${Math.random() * 100 - 50}vw`);
+        rose.style.setProperty("--sy", `${Math.random() * 100 - 50}vh`);
+        rose.style.setProperty("--tx", `calc(50vw + ${letter.x}px)`);
+        rose.style.setProperty("--ty", "40vh");
+        document.body.appendChild(rose);
+        setTimeout(() => rose.remove(), 3000);
+      }
+    });
+
+    // Fade out roses
+    setTimeout(() => fade.style.opacity = 1, 2200);
+
+    // After fade, show invitation with typing effect
     setTimeout(() => {
       invitation.classList.add("show");
       fade.style.opacity = 0;
-    }, 3200);
+      typeInvitation(scheduleText);
+    }, 4200);
   };
+
+  /* ===== TYPING EFFECT ===== */
+  function typeInvitation(container) {
+    const lines = Array.from(container.querySelectorAll("p"));
+    lines.forEach(p => p.textContent = ""); // clear lines
+    let i = 0;
+    function typeLine() {
+      if (i >= lines.length) return;
+      const text = container.querySelectorAll("p")[i].getAttribute("data-text") || lines[i].textContent;
+      let j = 0;
+      lines[i].textContent = "";
+      function typeChar() {
+        if (j < text.length) {
+          lines[i].textContent += text[j];
+          j++;
+          setTimeout(typeChar, 40);
+        } else {
+          i++;
+          setTimeout(typeLine, 200);
+        }
+      }
+      typeChar();
+    }
+    // store original text in data-text
+    lines.forEach(p => p.setAttribute("data-text", p.textContent));
+    typeLine();
+  }
 
 });
 </script>
