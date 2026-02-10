@@ -5,158 +5,211 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Nina’s First Valentine 💖</title>
 
+<link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+
 <style>
-  body {
-    margin: 0;
-    font-family: "Comic Sans MS", Arial, sans-serif;
-    background: linear-gradient(135deg, #ffe4ec, #fff1d6);
-    overflow: hidden;
-    text-align: center;
-    color: #ff5c8a;
-  }
+body {
+  margin: 0;
+  font-family: "Poppins", sans-serif;
+  background: linear-gradient(135deg, #ffe4ec, #fff1d6);
+  overflow: hidden;
+  text-align: center;
+  color: #ff5c8a;
+}
 
-  h1 {
-    margin-top: 20px;
-    font-size: 2.4rem;
-  }
+h1 {
+  font-family: "Pacifico", cursive;
+  font-size: 2.6rem;
+  margin-top: 20px;
+}
 
-  #instructions {
-    font-size: 1.2rem;
-    margin-bottom: 8px;
-  }
+#instructions { font-size: 1.2rem; }
+#counter { font-size: 1.3rem; margin-bottom: 12px; }
 
-  #counter {
-    font-size: 1.3rem;
-    margin-bottom: 12px;
-  }
+#musicBtn {
+  background: #ffb3c6;
+  color: #7a003c;
+  border: none;
+  border-radius: 20px;
+  padding: 10px 20px;
+  font-size: 1rem;
+  cursor: pointer;
+  margin-bottom: 15px;
+}
 
-  #musicBtn {
-    background: #ffb3c6;
-    color: #7a003c;
-    border: none;
-    border-radius: 20px;
-    padding: 10px 20px;
-    font-size: 1rem;
-    cursor: pointer;
-    margin-bottom: 15px;
-  }
+.item {
+  position: absolute;
+  font-size: 2.6rem;
+  cursor: pointer;
+  animation: floatUp linear infinite;
+}
 
-  .item {
-    position: absolute;
-    font-size: 2.6rem;
-    cursor: pointer;
-    animation: floatUp linear infinite;
-    opacity: 0.9;
-  }
+@keyframes floatUp {
+  from { transform: translateY(110vh); }
+  to { transform: translateY(-10vh); }
+}
 
-  .yjhd {
-    color: #9caf88; /* sage green */
-    font-weight: bold;
-  }
+#proposal {
+  position: fixed;
+  inset: 0;
+  background: rgba(255,228,236,0.96);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.6s ease;
+  z-index: 1000;
+}
 
-  @keyframes floatUp {
-    from { transform: translateY(110vh); }
-    to { transform: translateY(-10vh); }
-  }
+#proposal.show {
+  opacity: 1;
+  pointer-events: auto;
+}
 
-  #proposal {
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.5s;
-    margin-top: 70px;
-  }
+button.choice {
+  font-size: 1.4rem;
+  padding: 14px 28px;
+  border: none;
+  border-radius: 30px;
+  background: #ff5c8a;
+  color: white;
+  cursor: pointer;
+  margin: 15px;
+}
 
-  #proposal.show {
-    opacity: 1;
-    pointer-events: auto;
-  }
+#noBtn {
+  background: #ffc2d6;
+  color: #7a003c;
+}
 
-  button.choice {
-    font-size: 1.4rem;
-    padding: 14px 28px;
-    border: none;
-    border-radius: 30px;
-    background: #ff5c8a;
-    color: white;
-    cursor: pointer;
-    margin: 15px;
-    transition: transform 0.2s;
-  }
+#love {
+  font-size: 2rem;
+  margin-top: 20px;
+  display: none;
+}
 
-  button.choice:hover {
-    transform: scale(1.08);
-  }
+.heart {
+  position: fixed;
+  font-size: 2rem;
+  animation: floatHeart 3s linear forwards;
+}
 
-  #love {
-    font-size: 2rem;
-    margin-top: 20px;
-    display: none;
-  }
-
-  /* Big 3333 for final animation */
-  #bigThree {
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    font-size: 6rem;
-    color: gold;
-    font-weight: bold;
-    opacity: 0;
-    transition: opacity 1.5s ease-in-out, transform 1.5s ease-in-out;
-    z-index: 9999;
-  }
-
-  /* Rose animation */
-  .rose {
-    position: fixed;
-    color: #ff0000;
-    pointer-events: none;
-    animation: floatRose linear forwards;
-  }
-
-  @keyframes floatRose {
-    0% { transform: translateY(100vh) rotate(0deg); opacity: 1; }
-    100% { transform: translateY(-10vh) rotate(360deg); opacity: 0; }
-  }
+@keyframes floatHeart {
+  from { transform: translateY(100vh); opacity: 1; }
+  to { transform: translateY(-10vh); opacity: 0; }
+}
 </style>
 </head>
 
 <body>
 
 <h1>Collect Nina’s Favorites 💕</h1>
-<div id="instructions">
-  Click each of your favorite 3 times !!!
-</div>
+<div id="instructions">Click each of your favorite 3 times !!!</div>
 
-<button id="musicBtn">🎵 MUSIC TIME 😏😏😏</button>
+<button id="musicBtn">🎵 MUSIC TIME 😏</button>
 
-<div id="counter">
-  🦷 0 | 🥑 0 | 🍓 0 | ☕ 0 | YJHD 0
-</div>
-
-<div id="bigThree">3333</div>
+<div id="counter">🦷 0 | 🥑 0 | 🍓 0 | ☕ 0 | YJHD 0</div>
 
 <div id="proposal">
   <h1>Nina 💖</h1>
-  <p>You found everything… just like you found my heart😘😛😛.</p>
+  <p>You found everything… just like you found my heart 😘😛😛</p>
   <h2>Will you be my Valentine?</h2>
-
-  <button class="choice" id="yesBtn">YES 💕</button>
-  <button class="choice" id="noBtn">No</button>
-
+  <div>
+    <button class="choice" id="yesBtn">YES 💕</button>
+    <button class="choice" id="noBtn">No 😅</button>
+  </div>
   <div id="love">💖 happiest yes ever 💖</div>
 </div>
 
-<audio id="bgMusic" loop>
+<audio id="bgMusic" loop preload="auto">
   <source src="cozy.mp3" type="audio/mpeg">
 </audio>
 
 <script>
-const music = document.getElementById("bgMusic");
-const counter = document.getElementById("counter");
-const proposal = document.getElementById("proposal");
-const love = document.getElementById("love");
-const bigThree = document.getElementById("bigThree");
+document.addEventListener("DOMContentLoaded", () => {
 
-const collected = { tooth:0, avo:0, berry:0, coffee
+  const music = document.getElementById("bgMusic");
+  const musicBtn = document.getElementById("musicBtn");
+  const counter = document.getElementById("counter");
+  const proposal = document.getElementById("proposal");
+  const love = document.getElementById("love");
+  const yesBtn = document.getElementById("yesBtn");
+  const noBtn = document.getElementById("noBtn");
+
+  const collected = { tooth:0, avo:0, berry:0, coffee:0, yjhd:0 };
+  const needed = 3;
+
+  musicBtn.addEventListener("click", async () => {
+    try {
+      if (music.paused) {
+        await music.play();
+        musicBtn.textContent = "⏸ pause music";
+      } else {
+        music.pause();
+        musicBtn.textContent = "🎵 MUSIC TIME 😏";
+      }
+    } catch (e) {
+      console.log("Music blocked by browser, but page still works.");
+    }
+  });
+
+  function spawnItem(emoji, key, speed) {
+    const item = document.createElement("div");
+    item.className = "item";
+    item.textContent = emoji;
+    item.style.left = Math.random() * 90 + "vw";
+    item.style.animationDuration = speed + "s";
+
+    item.onclick = () => {
+      collected[key]++;
+      updateCounter();
+      item.remove();
+      checkWin();
+    };
+
+    document.body.appendChild(item);
+    setTimeout(() => item.remove(), speed * 1000);
+  }
+
+  function updateCounter() {
+    counter.textContent =
+      `🦷 ${collected.tooth} | 🥑 ${collected.avo} | 🍓 ${collected.berry} | ☕ ${collected.coffee} | YJHD ${collected.yjhd}`;
+  }
+
+  function checkWin() {
+    if (Object.values(collected).every(v => v >= needed)) {
+      proposal.classList.add("show");
+    }
+  }
+
+  setInterval(() => spawnItem("🦷", "tooth", 12), 1400);
+  setInterval(() => spawnItem("🥑", "avo", 13), 1600);
+  setInterval(() => spawnItem("🍓", "berry", 11), 1500);
+  setInterval(() => spawnItem("☕", "coffee", 14), 1700);
+  setInterval(() => spawnItem("🎬", "yjhd", 10), 1800);
+
+  yesBtn.onclick = () => {
+    love.style.display = "block";
+    for (let i = 0; i < 25; i++) {
+      const heart = document.createElement("div");
+      heart.className = "heart";
+      heart.textContent = "💖";
+      heart.style.left = Math.random() * 100 + "vw";
+      document.body.appendChild(heart);
+      setTimeout(() => heart.remove(), 3000);
+    }
+  };
+
+  noBtn.addEventListener("mouseenter", () => {
+    noBtn.style.position = "absolute";
+    noBtn.style.left = Math.random() * 80 + "%";
+    noBtn.style.top = Math.random() * 80 + "%";
+  });
+
+});
+</script>
+
+</body>
+</html>
