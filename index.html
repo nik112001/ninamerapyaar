@@ -204,7 +204,7 @@ document.addEventListener("DOMContentLoaded", () => {
   bgMusic.volume = 0.6;
   musicBtn.onclick = async () => { try { await bgMusic.play(); } catch{} };
 
-  // ===== MINIGAME (original floating up) =====
+  // ===== MINIGAME (floating up, count each item only once) =====
   const collected = { "🦷":0, "🥑":0, "🍓":0, "☕":0, "YJHD":0 };
   const totalNeeded = 3;
   const items = Object.keys(collected);
@@ -221,10 +221,16 @@ document.addEventListener("DOMContentLoaded", () => {
         el.style.animationDuration = (6 + Math.random()*4) + "s";
 
         el.onclick = () => {
+          if(el.dataset.collected) return; // count only once
+          el.dataset.collected = "true";
+
           collected[item]++;
           if(collected[item] > totalNeeded) collected[item] = totalNeeded;
-          document.getElementById("counter").textContent = items.map(i=>`${i} ${collected[i]}`).join(" | ");
-          if (Object.values(collected).every(v => v>=totalNeeded)) {
+
+          document.getElementById("counter").textContent =
+            items.map(i=>`${i} ${collected[i]}`).join(" | ");
+
+          if(Object.values(collected).every(v => v >= totalNeeded)) {
             proposal.classList.add("show");
           }
         };
@@ -233,7 +239,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
   spawnItems();
 
-  // ===== Moving mischievous NO button =====
+  // ===== Mischievous NO button =====
   function moveNoBtn() {
     noBtn.style.top = Math.random() * 70 + 10 + "vh";
     noBtn.style.left = Math.random() * 70 + 10 + "vw";
@@ -241,18 +247,16 @@ document.addEventListener("DOMContentLoaded", () => {
   setInterval(moveNoBtn, 700);
   noBtn.onclick = (e)=>e.preventDefault();
 
-  // ===== YES CLICK & NINA ROSES =====
+  // ===== YES CLICK & NINA ROSES CENTERED =====
   yesBtn.onclick = () => {
     proposal.classList.remove("show");
 
-    // Define points for letters N-I-N-A
     const letters = {
-      N: [[-60,60],[-60,40],[-60,20],[-60,0],[-60,-20],[-60,-40],[-60,-60],[ -40,-40],[-20,-20],[0,0],[0,-60],[0,-40],[0,-20],[0,0],[0,20],[0,40],[0,60]],
-      I: [[60,-60],[60,-40],[60,-20],[60,0],[60,20],[60,40],[60,60]],
-      N2:[[80,60],[80,40],[80,20],[80,0],[80,-20],[80,-40],[80,-60],[100,-40],[120,-20],[140,0],[140,-60],[140,-40],[140,-20],[140,0],[140,20],[140,40],[140,60]],
-      A:[[160,60],[160,40],[160,20],[160,0],[160,-20],[160,-40],[160,-60],[140,-60],[150,-60],[160,-60],[170,-60],[170,-40],[170,-20],[170,0],[170,20],[170,40],[160,0]]
+      N: [[-60,60],[-60,40],[-60,20],[-60,0],[-60,-20],[-60,-40],[-60,-60],[0,-60],[0,-40],[0,-20],[0,0],[0,20],[0,40],[0,60]],
+      I: [[20,-60],[20,-40],[20,-20],[20,0],[20,20],[20,40],[20,60]],
+      N2:[[60,60],[60,40],[60,20],[60,0],[60,-20],[60,-40],[60,-60],[120,-60],[120,-40],[120,-20],[120,0],[120,20],[120,40],[120,60]],
+      A:[[140,60],[140,40],[140,20],[140,0],[140,-20],[140,-40],[140,-60],[120,-60],[130,-60],[140,-60],[150,-60],[150,-40],[150,-20],[150,0],[150,20],[150,40],[140,0]]
     };
-
     const order = ["N","I","N2","A"];
     order.forEach((ltr,idx)=>{
       setTimeout(()=>{
@@ -261,7 +265,7 @@ document.addEventListener("DOMContentLoaded", () => {
             const rose = document.createElement("div");
             rose.className="rose";
             rose.textContent="🌹";
-            rose.style.setProperty("--sx", `${Math.random()*100-50}vw`);
+            rose.style.setProperty("--sx", `${50 + (Math.random()-0.5)*10}vw`);
             rose.style.setProperty("--sy", `110vh`);
             rose.style.setProperty("--tx", `calc(50vw + ${coord[0]}px + ${j*4}px)`);
             rose.style.setProperty("--ty", `calc(40vh + ${coord[1]}px + ${j*4}px)`);
