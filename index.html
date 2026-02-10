@@ -44,12 +44,7 @@ h1 {
   position: absolute;
   font-size: 2.6rem;
   cursor: pointer;
-  animation: floatUp linear infinite;
-}
-
-@keyframes floatUp {
-  from { transform: translateY(110vh); }
-  to { transform: translateY(-10vh); }
+  user-select: none;
 }
 
 /* ===== PROPOSAL ===== */
@@ -191,7 +186,6 @@ button.choice {
 document.addEventListener("DOMContentLoaded", () => {
   const bgMusic = document.getElementById("bgMusic");
   const musicBtn = document.getElementById("musicBtn");
-  const counterEl = document.getElementById("counter");
   const proposal = document.getElementById("proposal");
   const yesBtn = document.getElementById("yesBtn");
   const noBtn = document.getElementById("noBtn");
@@ -202,24 +196,52 @@ document.addEventListener("DOMContentLoaded", () => {
   bgMusic.volume = 0.6;
   musicBtn.onclick = async () => { try { await bgMusic.play(); } catch{} };
 
-  // ===== MINIGAME (original floating items) =====
-  const collected = { tooth:0, avo:0, berry:0, coffee:0, yjhd:0 };
+  // ===== MINIGAME (floating favorites) =====
+  const collected = { "🦷":0, "🥑":0, "🍓":0, "☕":0, "YJHD":0 };
   const totalNeeded = 3;
-  const items = ["🦷","🥑","🍓","☕","YJHD"];
-  items.forEach((item,i)=>{
-    const el = document.createElement("div");
-    el.className = "item";
-    el.textContent = item;
-    el.style.left = (10 + i*15) + "vw";
-    el.style.top = (70 + i*5) + "vh";
-    el.onclick = () => {
-      collected[item.toLowerCase()]++;
-      if (Object.values(collected).every(v => v >= totalNeeded)) {
-        proposal.classList.add("show");
+  const items = Object.keys(collected);
+
+  function spawnItems() {
+    items.forEach(item => {
+      const el = document.createElement("div");
+      el.className = "item";
+      el.textContent = item;
+      document.body.appendChild(el);
+
+      // Random starting position
+      el.style.left = Math.random()*90 + "vw";
+      el.style.top = Math.random()*80 + "vh";
+
+      // Floating animation
+      const speedX = (Math.random()-0.5)*0.5;
+      const speedY = (Math.random()-0.5)*0.5;
+      function float() {
+        const rect = el.getBoundingClientRect();
+        let x = rect.left + speedX*10;
+        let y = rect.top + speedY*10;
+        if (x < 0) x = 0;
+        if (x > window.innerWidth-40) x = window.innerWidth-40;
+        if (y < 0) y = 0;
+        if (y > window.innerHeight-40) y = window.innerHeight-40;
+        el.style.left = x + "px";
+        el.style.top = y + "px";
+        requestAnimationFrame(float);
       }
-    };
-    document.body.appendChild(el);
-  });
+      float();
+
+      // Click logic
+      el.onclick = () => {
+        collected[item]++;
+        if (collected[item] > totalNeeded) collected[item] = totalNeeded;
+        document.getElementById("counter").textContent = items.map(i=>`${i} ${collected[i]}`).join(" | ");
+        if (Object.values(collected).every(v => v>=totalNeeded)) {
+          proposal.classList.add("show");
+        }
+      };
+    });
+  }
+
+  spawnItems();
 
   // ===== Moving mischievous NO button =====
   function moveNoBtn() {
