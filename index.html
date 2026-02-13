@@ -147,17 +147,6 @@ button.choice {
   }
 }
 
-/* ===== FADE ===== */
-#fade {
-  position: fixed;
-  inset: 0;
-  background: white;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 1s ease;
-  z-index: 3000;
-}
-
 /* ===== WAX SEAL ===== */
 .wax-seal {
   position: fixed;
@@ -175,9 +164,9 @@ button.choice {
   position: fixed;
   inset: 0;
   background:
-    radial-gradient(circle at 20% 30%, rgba(255,215,0,0.15), transparent 40%),
-    radial-gradient(circle at 80% 70%, rgba(255,192,203,0.15), transparent 40%),
-    linear-gradient(135deg, #fff1f6, #fff8ea);
+    radial-gradient(circle at 20% 30%, rgba(255,215,0,0.08), transparent 40%),
+    radial-gradient(circle at 80% 70%, rgba(255,192,203,0.08), transparent 40%),
+    linear-gradient(135deg, #fffaf0, #fff5e6);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -247,7 +236,7 @@ button.choice {
   position: absolute;
   font-family: "Pacifico", cursive;
   font-size: 6rem;
-  color: rgba(255,192,203,0.08);
+  color: rgba(255,192,203,0.12);
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%) rotate(-20deg);
@@ -272,17 +261,12 @@ button.choice {
   margin: 0 6px;
 }
 
-/* FIREWORKS CANVAS */
-canvas#fireworks {
-  position: fixed;
-  top:0; left:0;
-  width:100%;
-  height:100%;
-  pointer-events:none;
-  z-index:5000;
+@media (max-width: 500px) {
+  .schedule { padding: 20px; font-size: 0.95rem; }
 }
 </style>
 </head>
+
 <body>
 
 <h1>Collect Nina’s Favorites 💕</h1>
@@ -302,7 +286,6 @@ canvas#fireworks {
 </div>
 
 <div class="wax-seal" id="waxSeal">💌</div>
-<div id="fade"></div>
 
 <div id="invitation">
   <div class="schedule" id="scheduleText">
@@ -318,8 +301,6 @@ canvas#fireworks {
   </div>
 </div>
 
-<canvas id="fireworks"></canvas>
-
 <audio id="bgMusic" loop preload="auto">
   <source src="cozy.mp3" type="audio/mpeg">
 </audio>
@@ -331,7 +312,6 @@ document.addEventListener("DOMContentLoaded", () => {
   const proposal = document.getElementById("proposal");
   const yesBtn = document.getElementById("yesBtn");
   const noBtn = document.getElementById("noBtn");
-  const fade = document.getElementById("fade");
   const invitation = document.getElementById("invitation");
   const scheduleText = document.getElementById("scheduleText");
   const counter = document.getElementById("counter");
@@ -397,7 +377,6 @@ document.addEventListener("DOMContentLoaded", () => {
   noBtn.addEventListener("mouseenter", moveNoBtn);
   noBtn.addEventListener("touchstart", e=>{e.preventDefault(); moveNoBtn();});
 
-  // YES CLICK → wax seal → rose burst → fade → invitation → fireworks
   yesBtn.onclick = () => {
     // remove minigame
     proposal.classList.remove("show");
@@ -423,14 +402,10 @@ document.addEventListener("DOMContentLoaded", () => {
       setTimeout(()=>rose.remove(),2500);
     }
 
-    // fade
-    setTimeout(()=>fade.style.opacity=1,1200);
     setTimeout(()=>{
       invitation.classList.add("show");
-      fade.style.opacity=0;
       typeInvitation(scheduleText);
-      launchFireworks();
-    },1500);
+    },1300);
   };
 
   function typeInvitation(container){
@@ -455,47 +430,6 @@ document.addEventListener("DOMContentLoaded", () => {
     typeLine();
   }
 
-  // FIREWORKS
-  const canvas = document.getElementById('fireworks');
-  const ctx = canvas.getContext('2d');
-  canvas.width = window.innerWidth;
-  canvas.height = window.innerHeight;
-
-  function launchFireworks(){
-    const particles = [];
-    for(let i=0;i<80;i++){
-      particles.push({
-        x: Math.random()*canvas.width,
-        y: Math.random()*canvas.height/2,
-        r: Math.random()*3+1,
-        dx: (Math.random()-0.5)*6,
-        dy: (Math.random()-0.5)*6,
-        color:`hsl(${Math.random()*360},100%,60%)`,
-        alpha:1
-      });
-    }
-
-    function animate(){
-      ctx.fillStyle = 'rgba(255,255,255,0.05)';
-      ctx.fillRect(0,0,canvas.width,canvas.height);
-
-      particles.forEach(p=>{
-        p.x += p.dx;
-        p.y += p.dy;
-        p.alpha -= 0.02;
-        if(p.alpha<=0) return;
-        ctx.beginPath();
-        ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
-        ctx.fillStyle = `hsla(${Math.random()*360},100%,60%,${p.alpha})`;
-        ctx.fill();
-      });
-
-      if(particles.some(p=>p.alpha>0)){
-        requestAnimationFrame(animate);
-      }
-    }
-    animate();
-  }
 });
 </script>
 
