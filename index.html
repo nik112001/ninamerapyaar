@@ -3,11 +3,15 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Nina’s First Valentine 💖</title>
+<title>Our First Valentine's 💖</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Poppins:wght@400;600&display=swap" rel="stylesheet">
 
 <style>
+* {
+  box-sizing: border-box;
+}
+
 body {
   margin: 0;
   font-family: "Poppins", sans-serif;
@@ -17,10 +21,22 @@ body {
   color: #ff5c8a;
 }
 
+/* ================= HEADER ================= */
+
 h1 {
   font-family: "Pacifico", cursive;
-  font-size: 2.6rem;
+  font-size: clamp(1.8rem, 5vw, 2.6rem);
   margin-top: 20px;
+  padding: 0 15px;
+}
+
+#instruction {
+  font-size: clamp(0.9rem, 3.5vw, 1rem);
+  margin-top: -5px;
+  margin-bottom: 10px;
+  color: #7a003c;
+  opacity: 0.85;
+  padding: 0 15px;
 }
 
 #musicBtn {
@@ -35,14 +51,16 @@ h1 {
 }
 
 #counter {
-  font-size: 1.2rem;
+  font-size: clamp(0.9rem, 3.5vw, 1.2rem);
   margin-bottom: 10px;
+  padding: 0 15px;
 }
 
-/* ===== FLOATING ITEMS ===== */
+/* ================= FLOATING ITEMS ================= */
+
 .item {
   position: absolute;
-  font-size: 2.6rem;
+  font-size: clamp(1.8rem, 6vw, 2.6rem);
   cursor: pointer;
   user-select: none;
   animation: floatUp linear infinite;
@@ -54,11 +72,36 @@ h1 {
   to { transform: translateY(-10vh); }
 }
 
-/* ===== PROPOSAL ===== */
+/* ================= GOLDEN 3 ================= */
+
+.golden-three {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0.5);
+  font-size: clamp(4rem, 15vw, 7rem);
+  font-weight: bold;
+  color: gold;
+  text-shadow:
+    0 0 10px gold,
+    0 0 25px #ffd700,
+    0 0 50px #ffea00;
+  z-index: 2500;
+  animation: popThree 1.2s ease forwards;
+}
+
+@keyframes popThree {
+  0% { transform: translate(-50%, -50%) scale(0.5); opacity: 0; }
+  50% { transform: translate(-50%, -50%) scale(1.2); opacity: 1; }
+  100% { transform: translate(-50%, -50%) scale(1); opacity: 0; }
+}
+
+/* ================= PROPOSAL ================= */
+
 #proposal {
   position: fixed;
   inset: 0;
-  background: rgba(255,228,236,0.96);
+  background: rgba(255,228,236,0.97);
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -67,6 +110,7 @@ h1 {
   pointer-events: none;
   transition: opacity 0.6s ease;
   z-index: 1000;
+  padding: 20px;
 }
 
 #proposal.show {
@@ -75,7 +119,7 @@ h1 {
 }
 
 button.choice {
-  font-size: 1.4rem;
+  font-size: 1.3rem;
   padding: 14px 28px;
   border: none;
   border-radius: 30px;
@@ -91,22 +135,32 @@ button.choice {
   cursor: default;
 }
 
-/* ===== ROSES RANDOM ===== */
+/* ================= ROSE BURST ================= */
+
 .rose {
   position: fixed;
-  font-size: 2.5rem;
+  top: 50%;
+  left: 50%;
+  font-size: clamp(1.5rem, 5vw, 2.5rem);
   pointer-events: none;
   z-index: 2000;
-  animation: roseMove 3s ease forwards;
+  animation: roseBurst 2.5s ease forwards;
 }
 
-@keyframes roseMove {
-  0% { transform: translate(var(--sx), var(--sy)) rotate(0deg); opacity: 0; }
+@keyframes roseBurst {
+  0% { transform: translate(-50%, -50%) scale(0.5); opacity: 0; }
   30% { opacity: 1; }
-  100% { transform: translate(var(--tx), var(--ty)) rotate(360deg); opacity: 1; }
+  100% {
+    transform:
+      translate(calc(-50% + var(--dx)), calc(-50% + var(--dy)))
+      rotate(360deg)
+      scale(1.2);
+    opacity: 0;
+  }
 }
 
-/* ===== FADE ===== */
+/* ================= FADE ================= */
+
 #fade {
   position: fixed;
   inset: 0;
@@ -117,7 +171,8 @@ button.choice {
   z-index: 3000;
 }
 
-/* ===== INVITATION ===== */
+/* ================= INVITATION ================= */
+
 #invitation {
   position: fixed;
   inset: 0;
@@ -138,21 +193,34 @@ button.choice {
 }
 
 .schedule {
+  width: 100%;
   max-width: 420px;
-  background: white;
-  padding: 25px;
-  border-radius: 20px;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+  background: linear-gradient(135deg, #ffffff, #fff6f9);
+  padding: 30px;
+  border-radius: 25px;
+  border: 3px solid gold;
+  box-shadow:
+    0 15px 40px rgba(0,0,0,0.15),
+    0 0 15px rgba(255,215,0,0.4);
   color: #7a003c;
   text-align: left;
-  font-size: 1.05rem;
-  line-height: 1.5;
+  font-size: 1rem;
+  line-height: 1.6;
 }
 
 .schedule h2 {
   font-family: "Pacifico", cursive;
   color: #ff5c8a;
   text-align: center;
+  margin-top: 0;
+}
+
+/* Mobile spacing fix */
+@media (max-width: 500px) {
+  .schedule {
+    padding: 20px;
+    font-size: 0.95rem;
+  }
 }
 </style>
 </head>
@@ -160,10 +228,13 @@ button.choice {
 <body>
 
 <h1>Collect Nina’s Favorites 💕</h1>
+<p id="instruction">
+  ✨ Collect <strong>3</strong> of each — because 3 is your favorite number 💛
+</p>
+
 <button id="musicBtn">🎵 MUSIC TIME 😏</button>
 <div id="counter">🦷 0 | 🥑 0 | 🍓 0 | ☕ 0 | YJHD 0</div>
 
-<!-- PROPOSAL -->
 <div id="proposal">
   <h1>Nina 💖</h1>
   <p>You found everything… just like you found my heart 😘😛😛</p>
@@ -182,7 +253,7 @@ button.choice {
     <p>😴 Afternoon: Come home, sleep & watch Harry Potter</p>
     <p>🚿 Evening: Shower, get ready & pregame</p>
     <p>🍝 7:45 PM: Dinner at <em>Sotto Sopra</em></p>
-    <p>💫 Night: I’ll remind Nina how much i like her 😌</p>
+    <p>💫 Night: I’ll remind Nina how much I like her 😌</p>
   </div>
 </div>
 
@@ -192,6 +263,7 @@ button.choice {
 
 <script>
 document.addEventListener("DOMContentLoaded", () => {
+
   const bgMusic = document.getElementById("bgMusic");
   const musicBtn = document.getElementById("musicBtn");
   const proposal = document.getElementById("proposal");
@@ -200,18 +272,18 @@ document.addEventListener("DOMContentLoaded", () => {
   const fade = document.getElementById("fade");
   const invitation = document.getElementById("invitation");
   const scheduleText = document.getElementById("scheduleText");
+  const counter = document.getElementById("counter");
 
   bgMusic.volume = 0.6;
   musicBtn.onclick = async () => { try { await bgMusic.play(); } catch{} };
 
-  // ===== MINIGAME =====
   const collected = { "🦷":0, "🥑":0, "🍓":0, "☕":0, "YJHD":0 };
   const totalNeeded = 3;
   const items = Object.keys(collected);
 
   function spawnItems() {
     items.forEach(item=>{
-      for(let i=0;i<7;i++){ // multiple copies
+      for(let i=0;i<7;i++){
         const el = document.createElement("div");
         el.className = "item";
         el.textContent = item;
@@ -221,14 +293,26 @@ document.addEventListener("DOMContentLoaded", () => {
         el.style.animationDuration = (6 + Math.random()*4) + "s";
 
         el.onclick = () => {
-          if(el.dataset.collected) return; // count each only once
+          if(el.dataset.collected) return;
           el.dataset.collected = "true";
 
           collected[item]++;
           if(collected[item] > totalNeeded) collected[item] = totalNeeded;
 
-          document.getElementById("counter").textContent =
+          counter.textContent =
             items.map(i=>`${i} ${collected[i]}`).join(" | ");
+
+          if(collected[item] === totalNeeded) {
+            document.querySelectorAll('.item').forEach(e=>{
+              if(e.textContent === item) e.remove();
+            });
+
+            const three = document.createElement("div");
+            three.className = "golden-three";
+            three.textContent = "3";
+            document.body.appendChild(three);
+            setTimeout(()=>three.remove(),1200);
+          }
 
           if(Object.values(collected).every(v => v >= totalNeeded)) {
             proposal.classList.add("show");
@@ -237,9 +321,9 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     });
   }
+
   spawnItems();
 
-  // ===== Mischievous NO button =====
   function moveNoBtn() {
     noBtn.style.top = Math.random() * 70 + 10 + "vh";
     noBtn.style.left = Math.random() * 70 + 10 + "vw";
@@ -247,25 +331,20 @@ document.addEventListener("DOMContentLoaded", () => {
   setInterval(moveNoBtn, 700);
   noBtn.onclick = (e)=>e.preventDefault();
 
-  // ===== YES CLICK: random roses on blank page =====
   yesBtn.onclick = () => {
+
     proposal.classList.remove("show");
-
-    // Clear the page of minigame items
     document.querySelectorAll('.item').forEach(el => el.remove());
-    document.getElementById("counter").style.display = "none";
+    counter.style.display = "none";
 
-    // Generate 100 roses randomly
-    for(let i=0;i<100;i++){
+    for(let i=0;i<80;i++){
       const rose = document.createElement("div");
       rose.className="rose";
       rose.textContent="🌹";
-      rose.style.setProperty("--sx", `${Math.random()*100}vw`);
-      rose.style.setProperty("--sy", `110vh`);
-      rose.style.setProperty("--tx", `${Math.random()*100}vw`);
-      rose.style.setProperty("--ty", `${Math.random()*90}vh`);
+      rose.style.setProperty("--dx", `${(Math.random()-0.5)*800}px`);
+      rose.style.setProperty("--dy", `${(Math.random()-0.5)*600}px`);
       document.body.appendChild(rose);
-      setTimeout(()=>rose.remove(),4000);
+      setTimeout(()=>rose.remove(),2500);
     }
 
     setTimeout(()=>fade.style.opacity=1,2000);
@@ -276,7 +355,6 @@ document.addEventListener("DOMContentLoaded", () => {
     },3500);
   };
 
-  // ===== TYPING EFFECT =====
   function typeInvitation(container){
     const lines = Array.from(container.querySelectorAll("p"));
     lines.forEach(p=>p.setAttribute("data-text",p.textContent));
@@ -291,7 +369,7 @@ document.addEventListener("DOMContentLoaded", () => {
         if(j<text.length){
           p.textContent+=text[j];
           j++;
-          setTimeout(typeChar,40);
+          setTimeout(typeChar,35);
         } else {
           i++;
           setTimeout(typeLine,200);
