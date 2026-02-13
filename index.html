@@ -1,449 +1,316 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Our First Valentine's 💖</title>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Valentine</title>
 
-<link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;700&family=Great+Vibes&family=Poppins:wght@300;400;500&display=swap" rel="stylesheet">
 
 <style>
-* { box-sizing: border-box; }
+:root {
+  --sage: #9caf88;
+  --gold: #d4af37;
+  --rose: #ffdde2;
+  --soft-pink: #fce4ec;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
 
 body {
-  margin: 0;
-  font-family: "Poppins", sans-serif;
-  background: linear-gradient(135deg, #ffe4ec, #fff1d6);
-  overflow: hidden;
+  font-family: 'Poppins', sans-serif;
+  background: linear-gradient(135deg, var(--rose), var(--soft-pink));
+  overflow-x: hidden;
   text-align: center;
-  color: #ff5c8a;
 }
 
-/* ===== HEADER ===== */
+/* ================= MINI GAME ================= */
 
-h1 {
-  font-family: "Pacifico", cursive;
-  font-size: clamp(1.8rem, 5vw, 2.6rem);
-  margin-top: 20px;
-  padding: 0 15px;
+#game {
+  padding: 40px 20px;
 }
 
-#instruction {
-  font-size: clamp(0.9rem, 3.5vw, 1rem);
-  margin-top: -5px;
-  margin-bottom: 10px;
-  color: #7a003c;
-  opacity: 0.85;
-  padding: 0 15px;
+.instructions {
+  font-size: 1.2rem;
+  margin-bottom: 20px;
+  font-weight: 500;
 }
 
-#musicBtn {
-  background: #ffb3c6;
-  color: #7a003c;
-  border: none;
-  border-radius: 20px;
-  padding: 10px 20px;
-  font-size: 1rem;
-  cursor: pointer;
-  margin-bottom: 10px;
+.items {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 20px;
 }
-
-#counter {
-  font-size: clamp(0.9rem, 3.5vw, 1.2rem);
-  margin-bottom: 10px;
-  padding: 0 15px;
-}
-
-/* ===== FLOATING ITEMS ===== */
 
 .item {
-  position: absolute;
-  font-size: clamp(1.8rem, 6vw, 2.6rem);
+  font-size: 2.5rem;
   cursor: pointer;
-  user-select: none;
-  animation: floatUp linear infinite;
-  opacity: 0.9;
+  transition: transform 0.3s ease;
 }
 
-@keyframes floatUp {
-  from { transform: translateY(110vh); }
-  to { transform: translateY(-10vh); }
+.item:hover {
+  transform: scale(1.3);
 }
 
-/* ===== GOLDEN 3 ===== */
+.counter {
+  margin-top: 25px;
+  font-weight: 500;
+}
 
-.golden-three {
+/* ================= GOLDEN 3 ================= */
+
+#goldenThree {
   position: fixed;
   top: 50%;
   left: 50%;
-  transform: translate(-50%, -50%) scale(0.5);
-  font-size: clamp(4rem, 15vw, 7rem);
-  font-weight: bold;
-  color: gold;
-  text-shadow:
-    0 0 10px gold,
-    0 0 25px #ffd700,
-    0 0 50px #ffea00;
-  z-index: 2500;
-  animation: popThree 1.2s ease forwards;
-}
-
-@keyframes popThree {
-  0% { transform: translate(-50%, -50%) scale(0.5); opacity: 0; }
-  50% { transform: translate(-50%, -50%) scale(1.2); opacity: 1; }
-  100% { transform: translate(-50%, -50%) scale(1); opacity: 0; }
-}
-
-/* ===== PROPOSAL ===== */
-
-#proposal {
-  position: fixed;
-  inset: 0;
-  background: rgba(255,228,236,0.97);
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
+  transform: translate(-50%, -50%) scale(0);
+  font-size: 10rem;
+  font-family: 'Playfair Display', serif;
+  color: var(--gold);
+  text-shadow: 0 0 25px var(--gold);
   opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.6s ease;
-  z-index: 1000;
-  padding: 20px;
+  transition: all 1s ease;
+  z-index: 20;
 }
 
-#proposal.show {
+#goldenThree.show {
+  transform: translate(-50%, -50%) scale(1);
   opacity: 1;
-  pointer-events: auto;
 }
 
-button.choice {
-  font-size: 1.3rem;
-  padding: 14px 28px;
-  border: none;
-  border-radius: 30px;
-  background: #ff5c8a;
-  color: white;
+/* ================= ENVELOPE ================= */
+
+#envelopeSection {
+  display: none;
+  height: 100vh;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+}
+
+.envelope {
+  position: relative;
+  width: 280px;
+  height: 180px;
+  background: var(--sage);
+  border-radius: 10px;
   cursor: pointer;
-  margin-top: 20px;
+  perspective: 1000px;
+}
+
+.flap {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background: var(--sage);
+  clip-path: polygon(0 0, 100% 0, 50% 50%);
+  transform-origin: top;
+  transition: transform 1s ease;
+}
+
+.envelope.open .flap {
+  transform: rotateX(180deg);
+}
+
+.letter {
+  position: absolute;
+  width: 90%;
+  height: 90%;
+  background: white;
+  top: 5%;
+  left: 5%;
+  border-radius: 10px;
+  transform: translateY(100%);
+  transition: transform 1s ease 0.5s;
+}
+
+.envelope.open .letter {
+  transform: translateY(0);
+}
+
+/* ================= INVITATION ================= */
+
+#invitation {
+  display: none;
+  min-height: 100vh;
+  padding: 40px 20px;
+  align-items: center;
+  justify-content: center;
+}
+
+.card {
+  background: rgba(255,255,255,0.9);
+  backdrop-filter: blur(8px);
+  border-radius: 25px;
+  padding: 40px 25px;
+  max-width: 400px;
+  margin: auto;
+  box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+  border: 2px solid var(--gold);
+  position: relative;
+}
+
+.card h1 {
+  font-family: 'Playfair Display', serif;
+  font-size: 2rem;
+  color: var(--gold);
+  margin-bottom: 15px;
+}
+
+.script {
+  font-family: 'Great Vibes', cursive;
+  font-size: 1.8rem;
+  margin: 15px 0;
+  color: #444;
+}
+
+.buttons {
+  margin-top: 25px;
+}
+
+button {
+  padding: 10px 20px;
+  margin: 10px;
+  border-radius: 25px;
+  border: none;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+#yesBtn {
+  background: var(--sage);
+  color: white;
+}
+
+#yesBtn:hover {
+  background: var(--gold);
 }
 
 #noBtn {
-  background: #fbb;
-}
-
-/* ===== ROSE BURST ===== */
-
-.rose {
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  font-size: clamp(1.5rem, 5vw, 2.5rem);
-  pointer-events: none;
-  z-index: 2000;
-  animation: roseBurst 2.5s ease forwards;
-}
-
-@keyframes roseBurst {
-  0% { transform: translate(-50%, -50%) scale(0.5); opacity: 0; }
-  30% { opacity: 1; }
-  100% {
-    transform:
-      translate(calc(-50% + var(--dx)), calc(-50% + var(--dy)))
-      rotate(360deg)
-      scale(1.2);
-    opacity: 0;
-  }
-}
-
-/* ===== FADE ===== */
-
-#fade {
-  position: fixed;
-  inset: 0;
-  background: white;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 2s ease;
-  z-index: 3000;
-}
-
-/* ===== INVITATION ===== */
-
-#invitation {
-  position: fixed;
-  inset: 0;
-  background:
-    radial-gradient(circle at 20% 30%, rgba(255,215,0,0.15), transparent 40%),
-    radial-gradient(circle at 80% 70%, rgba(255,192,203,0.15), transparent 40%),
-    linear-gradient(135deg, #fff1f6, #fff8ea);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 2s ease;
-  z-index: 4000;
-  padding: 20px;
-}
-
-#invitation.show {
-  opacity: 1;
-  pointer-events: auto;
-}
-
-.schedule {
-  width: 100%;
-  max-width: 420px;
-  background: linear-gradient(145deg, #ffffff, #fff6f9);
-  padding: 30px;
-  border-radius: 30px;
-  border: 4px solid transparent;
-  background-clip: padding-box;
+  background: #f48fb1;
+  color: white;
   position: relative;
-  overflow: hidden;
-  color: #7a003c;
-  text-align: left;
-  font-size: 1rem;
-  line-height: 1.6;
-  box-shadow: 0 20px 60px rgba(0,0,0,0.15);
-  animation: cardFloat 4s ease-in-out infinite;
 }
 
-.schedule::before {
-  content: "";
-  position: absolute;
-  inset: -4px;
-  border-radius: 34px;
-  background: linear-gradient(45deg, gold, #ffd700, #fff4b5, gold);
-  z-index: -1;
-}
-
-@keyframes cardFloat {
-  0%,100% { transform: translateY(0px); }
-  50% { transform: translateY(-10px); }
-}
-
-.schedule h2 {
-  font-family: "Pacifico", cursive;
-  color: #ff5c8a;
-  text-align: center;
-  margin-top: 0;
-}
-
-.schedule h2::after {
-  content: "";
-  display: block;
-  width: 60px;
-  height: 3px;
-  background: gold;
-  margin: 10px auto 20px auto;
-  border-radius: 3px;
-}
-
-/* Watermark */
 .watermark {
-  position: absolute;
-  font-family: "Pacifico", cursive;
-  font-size: 6rem;
-  color: rgba(255,192,203,0.08);
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%) rotate(-20deg);
-  pointer-events: none;
-  white-space: nowrap;
+  margin-top: 20px;
+  font-size: 0.8rem;
+  opacity: 0.6;
 }
 
-/* Forever text */
-.forever {
-  text-align: center;
-  margin-top: 25px;
-  font-family: "Pacifico", cursive;
-  font-size: 1.2rem;
-  color: #ff5c8a;
-}
-
-.forever::before,
-.forever::after {
-  content: "❤";
-  color: gold;
-  font-size: 0.9rem;
-  margin: 0 6px;
-}
-
-@media (max-width: 500px) {
-  .schedule {
-    padding: 20px;
-    font-size: 0.95rem;
+@media (max-width: 600px) {
+  .card {
+    width: 95%;
   }
 }
 </style>
 </head>
-
 <body>
 
-<h1>Collect Nina’s Favorites 💕</h1>
-<p id="instruction">
-  ✨ Collect <strong>3</strong> of each — because 3 is your favorite number 💛
-</p>
-
-<button id="musicBtn">🎵 MUSIC TIME 😏</button>
-<div id="counter">🦷 0 | 🥑 0 | 🍓 0 | ☕ 0 | YJHD 0</div>
-
-<div id="proposal">
-  <h1>Nina 💖</h1>
-  <p>You found everything… just like you found my heart 😘😛😛</p>
-  <h2>Will you be my Valentine?</h2>
-  <button class="choice" id="yesBtn">YES 💕</button>
-  <button class="choice" id="noBtn">NO 😏</button>
-</div>
-
-<div id="fade"></div>
-
-<div id="invitation">
-  <div class="schedule" id="scheduleText">
-    <div class="watermark">N&N</div>
-    <h2>Saturday With You 💖</h2>
-    <p>☀️ Morning: Get up & workout together</p>
-    <p>🍾 11:00 – 3:00: Bottomless brunch at <em>Barcocina</em></p>
-    <p>😴 Afternoon: Come home, sleep & watch Harry Potter</p>
-    <p>🚿 Evening: Shower, get ready & pregame</p>
-    <p>🍝 7:45 PM: Dinner at <em>Sotto Sopra</em></p>
-    <p>💫 Night: I’ll remind Nina how much I like her 😌</p>
-    <div class="forever">Forever & Always</div>
+<!-- MINI GAME -->
+<div id="game">
+  <div class="instructions">
+    Choose 3 of each 💕 (Her favorite number is 3)
+  </div>
+  <div class="items">
+    <div class="item">🌹</div>
+    <div class="item">🌹</div>
+    <div class="item">🌹</div>
+    <div class="item">💌</div>
+    <div class="item">💌</div>
+    <div class="item">💌</div>
+    <div class="item">💖</div>
+    <div class="item">💖</div>
+    <div class="item">💖</div>
+  </div>
+  <div class="counter" id="counter">
+    Roses: 0 | Letters: 0 | Hearts: 0
   </div>
 </div>
 
-<audio id="bgMusic" loop preload="auto">
-  <source src="cozy.mp3" type="audio/mpeg">
-</audio>
+<div id="goldenThree">3</div>
+
+<!-- ENVELOPE -->
+<div id="envelopeSection">
+  <div class="envelope" id="envelope">
+    <div class="flap"></div>
+    <div class="letter"></div>
+  </div>
+  <p style="margin-top:20px;">Tap the envelope 💌</p>
+</div>
+
+<!-- INVITATION -->
+<div id="invitation">
+  <div class="card">
+    <h1>Will You Be My Valentine?</h1>
+    <div class="script">Forever & Always ♥</div>
+    <p>February 14th</p>
+
+    <div class="buttons">
+      <button id="yesBtn">Yes 💚</button>
+      <button id="noBtn">No</button>
+    </div>
+
+    <div class="watermark">
+      N&N<br/>
+      Forever & Always ♥
+    </div>
+  </div>
+</div>
 
 <script>
-document.addEventListener("DOMContentLoaded", () => {
+let roses = 0, letters = 0, hearts = 0;
 
-  const bgMusic = document.getElementById("bgMusic");
-  const musicBtn = document.getElementById("musicBtn");
-  const proposal = document.getElementById("proposal");
-  const yesBtn = document.getElementById("yesBtn");
-  const noBtn = document.getElementById("noBtn");
-  const fade = document.getElementById("fade");
-  const invitation = document.getElementById("invitation");
-  const scheduleText = document.getElementById("scheduleText");
-  const counter = document.getElementById("counter");
+document.querySelectorAll('.item').forEach(item => {
+  item.addEventListener('click', () => {
+    if(item.textContent === '🌹') roses++;
+    if(item.textContent === '💌') letters++;
+    if(item.textContent === '💖') hearts++;
 
-  bgMusic.volume = 0.6;
-  musicBtn.onclick = async () => { try { await bgMusic.play(); } catch{} };
+    item.remove();
 
-  const collected = { "🦷":0, "🥑":0, "🍓":0, "☕":0, "YJHD":0 };
-  const totalNeeded = 3;
-  const items = Object.keys(collected);
+    document.getElementById('counter').innerText =
+      `Roses: ${roses} | Letters: ${letters} | Hearts: ${hearts}`;
 
-  function spawnItems() {
-    items.forEach(item=>{
-      for(let i=0;i<7;i++){
-        const el = document.createElement("div");
-        el.className = "item";
-        el.textContent = item;
-        document.body.appendChild(el);
-
-        el.style.left = Math.random()*90 + "vw";
-        el.style.animationDuration = (6 + Math.random()*4) + "s";
-
-        el.onclick = () => {
-          el.remove();
-
-          collected[item]++;
-          if(collected[item] > totalNeeded) collected[item] = totalNeeded;
-
-          counter.textContent =
-            items.map(i=>`${i} ${collected[i]}`).join(" | ");
-
-          if(collected[item] === totalNeeded) {
-            document.querySelectorAll('.item').forEach(e=>{
-              if(e.textContent === item) e.remove();
-            });
-
-            const three = document.createElement("div");
-            three.className = "golden-three";
-            three.textContent = "3";
-            document.body.appendChild(three);
-            setTimeout(()=>three.remove(),1200);
-          }
-
-          if(Object.values(collected).every(v => v >= totalNeeded)) {
-            proposal.classList.add("show");
-          }
-        };
-      }
-    });
-  }
-
-  spawnItems();
-
-  function moveNoBtn() {
-    const padding = 20;
-    const maxX = window.innerWidth - noBtn.offsetWidth - padding;
-    const maxY = window.innerHeight - noBtn.offsetHeight - padding;
-    const newX = Math.random() * maxX;
-    const newY = Math.random() * maxY;
-    noBtn.style.position = "fixed";
-    noBtn.style.left = newX + "px";
-    noBtn.style.top = newY + "px";
-  }
-
-  noBtn.addEventListener("mouseenter", moveNoBtn);
-  noBtn.addEventListener("touchstart", (e) => {
-    e.preventDefault();
-    moveNoBtn();
+    if(roses === 3 && letters === 3 && hearts === 3){
+      startGoldenThree();
+    }
   });
+});
 
-  yesBtn.onclick = () => {
-    proposal.classList.remove("show");
-    document.querySelectorAll('.item').forEach(el => el.remove());
-    counter.style.display = "none";
+function startGoldenThree(){
+  document.getElementById('game').style.display = "none";
+  const three = document.getElementById('goldenThree');
+  three.classList.add('show');
 
-    for(let i=0;i<80;i++){
-      const rose = document.createElement("div");
-      rose.className="rose";
-      rose.textContent="🌹";
-      rose.style.setProperty("--dx", `${(Math.random()-0.5)*800}px`);
-      rose.style.setProperty("--dy", `${(Math.random()-0.5)*600}px`);
-      document.body.appendChild(rose);
-      setTimeout(()=>rose.remove(),2500);
-    }
+  setTimeout(() => {
+    three.style.display = "none";
+    document.getElementById('envelopeSection').style.display = "flex";
+  }, 2500);
+}
 
-    setTimeout(()=>fade.style.opacity=1,2000);
-    setTimeout(()=>{
-      invitation.classList.add("show");
-      fade.style.opacity=0;
-      typeInvitation(scheduleText);
-    },3500);
-  };
+document.getElementById('envelope').addEventListener('click', () => {
+  document.getElementById('envelope').classList.add('open');
 
-  function typeInvitation(container){
-    const lines = Array.from(container.querySelectorAll("p"));
-    lines.forEach(p=>p.setAttribute("data-text",p.textContent));
-    lines.forEach(p=>p.textContent="");
-    let i=0;
-    function typeLine(){
-      if(i>=lines.length)return;
-      const p=lines[i];
-      const text=p.getAttribute("data-text");
-      let j=0;
-      function typeChar(){
-        if(j<text.length){
-          p.textContent+=text[j];
-          j++;
-          setTimeout(typeChar,35);
-        } else {
-          i++;
-          setTimeout(typeLine,200);
-        }
-      }
-      typeChar();
-    }
-    typeLine();
-  }
+  setTimeout(() => {
+    document.getElementById('envelopeSection').style.display = "none";
+    document.getElementById('invitation').style.display = "flex";
+  }, 2000);
+});
 
+const noBtn = document.getElementById('noBtn');
+noBtn.addEventListener('mouseover', () => {
+  const x = Math.random() * (window.innerWidth - 100);
+  const y = Math.random() * (window.innerHeight - 50);
+  noBtn.style.position = "absolute";
+  noBtn.style.left = x + "px";
+  noBtn.style.top = y + "px";
 });
 </script>
 
